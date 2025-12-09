@@ -44,6 +44,7 @@ def bank_pos_navigate_main():
     
     # 1. กำหนดตัวแปรจาก Config
     BUTTON_A_TITLE = B_CFG['BUTTON_A_TITLE']
+    BUTTON_O_TITLE = B_CFG['BUTTON_O_TITLE']
     ID_CARD_BUTTON_TITLE = B_CFG['ID_CARD_BUTTON_TITLE']
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
@@ -58,6 +59,10 @@ def bank_pos_navigate_main():
         
         # ========= ขั้นตอนกดปุ่มฟังก์ชัน A =========
         main_window.child_window(title=BUTTON_A_TITLE, control_type="Text").click_input()
+        time.sleep(WAIT_TIME)
+        print("[/] กำลังดำเนินการในหน้า 'ผู้ฝากส่ง'...")
+
+        main_window.child_window(title=BUTTON_O_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         print("[/] กำลังดำเนินการในหน้า 'ผู้ฝากส่ง'...")
     
