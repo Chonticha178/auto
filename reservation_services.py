@@ -87,7 +87,7 @@ def bank_pos_navigate_main():
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
 
-        print(f"[*] 2.5 กดปุ่ม '{AGREED_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        print(f"[*] 2.5 กดปุ่ม '{AGREED_BUTTON_TITLE}' ตกลง...")
         main_window.child_window(title=AGREED_BUTTON_TITLE, auto_id=AGREED_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
 
