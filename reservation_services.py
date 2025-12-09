@@ -49,6 +49,8 @@ def bank_pos_navigate_main():
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
+    AGREED_BUTTON_TITLE = B_CFG['AGREED_BUTTON_TITLE']
+    AGREED_BUTTON_AUTO_ID = B_CFG['AGREED_BUTTON_AUTO_ID']
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
     
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' โดยการกดปุ่ม '{BUTTON_A_TITLE}'...")
@@ -85,7 +87,11 @@ def bank_pos_navigate_main():
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
 
-        print(f"[*] 2.4. กดปุ่ม '{FINISH_BUTTON_TITLE}' เสร็จสิ้น...")
+        print(f"[*] 2.5 กดปุ่ม '{AGREED_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        main_window.child_window(title=AGREED_BUTTON_TITLE, auto_id=AGREED_BUTTON_AUTO_ID, control_type="Text").click_input()
+        time.sleep(WAIT_TIME)
+
+        print(f"[*] 2.6. กดปุ่ม '{FINISH_BUTTON_TITLE}' เสร็จสิ้น...")
         main_window.child_window(title=FINISH_BUTTON_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         
