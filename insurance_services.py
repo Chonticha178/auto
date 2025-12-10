@@ -66,15 +66,15 @@ def insurance_main():
         print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
         main_window.child_window(title=ID_CARD_BUTTON_TITLE,control_type="Text").click_input()
 
-        # หมายเลขทศ.
-        print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
-        main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
-        main_window.type_keys(PHONE_NUMBER)
-
         print(f"[*] 2.3. กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
         # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
         main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
         main_window.type_keys(POSTAL_CODE)
+
+        # หมายเลขทศ.
+        print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
+        main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
+        main_window.type_keys(PHONE_NUMBER)
 
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
         print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
