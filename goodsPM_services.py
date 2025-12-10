@@ -39,7 +39,7 @@ S_CFG = CONFIG['BANK_POS_SUB_TRANSACTIONS']
 
 # ----------------- ฟังก์ชันหลัก: นำทางและกรอกข้อมูล -----------------
 
-def GOODS_PM_MAIN():
+def payment_main():
     """ฟังก์ชันหลัก: นำทางเข้าหน้า 'ผู้ฝากส่ง' และกรอกข้อมูลผู้ฝากส่ง"""
     
     # 1. กำหนดตัวแปรจาก Config
@@ -69,6 +69,8 @@ def GOODS_PM_MAIN():
         print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
         main_window.child_window(title=ID_CARD_BUTTON_TITLE, control_type="Text").click_input()
 
+        # print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
+
         # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
         print(f"[*] 2.2. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
@@ -87,7 +89,7 @@ def GOODS_PM_MAIN():
 
 # ----------------- ฟังก์ชันแม่แบบสำหรับรายการย่อย -----------------
 
-def run_sub_transaction(main_window, transaction_title):
+def run_sub_menu(main_window, transaction_title):
     """ฟังก์ชันที่ใช้ร่วมกันสำหรับรายการย่อยทั้งหมด"""
     
     # 1. กำหนดตัวแปรจาก Config
@@ -123,7 +125,7 @@ def bank_pos_navigate1():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_1_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_1_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -131,12 +133,12 @@ def bank_pos_navigate1():
 def bank_pos_navigate2():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 2)...")
     try:
-        if not bank_pos_navigate_main(): return
+        if not payment_main(): return
         
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_2_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_2_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -144,12 +146,12 @@ def bank_pos_navigate2():
 def bank_pos_navigate3():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 3)...")
     try:
-        if not GOODS_PM_MAIN(): return
+        if not payment_main(): return
         
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_3_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_3_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -157,12 +159,12 @@ def bank_pos_navigate3():
 def bank_pos_navigate4():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 4)...")
     try:
-        if not GOODS_PM_MAIN(): return
+        if not payment_main(): return
         
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_4_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_4_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -170,12 +172,12 @@ def bank_pos_navigate4():
 def bank_pos_navigate5():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 5)...")
     try:
-        if not GOODS_PM_MAIN(): return
+        if not payment_main(): return
         
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_5_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_5_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -183,23 +185,66 @@ def bank_pos_navigate5():
 def bank_pos_navigate6():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 6)...")
     try:
-        if not GOODS_PM_MAIN(): return
+        if not payment_main(): return
         
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         
-        run_sub_transaction(main_window, S_CFG['TRANSACTION_6_TITLE'])
+        run_sub_menu(main_window, S_CFG['TRANSACTION_6_TITLE'])
         
     except Exception as e:
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def bank_pos_navigate7():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 7)...")
+    try:
+        if not payment_main(): return
         
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_sub_menu(main_window, S_CFG['TRANSACTION_7_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def bank_pos_navigate8():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 6)...")
+    try:
+        if not payment_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_sub_menu(main_window, S_CFG['TRANSACTION_6_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def bank_pos_navigate9():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 6)...")
+    try:
+        if not payment_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_sub_menu(main_window, S_CFG['TRANSACTION_6_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+
 # ----------------- Main Execution -----------------
 
 if __name__ == "__main__":
-    GOODS_PM_MAIN()
+    payment_main()
     bank_pos_navigate1()
     bank_pos_navigate2()
     bank_pos_navigate3()
     bank_pos_navigate4()
     bank_pos_navigate5()
     bank_pos_navigate6()
+    bank_pos_navigate7()
+    bank_pos_navigate8()
+    bank_pos_navigate9()
