@@ -48,7 +48,7 @@ def payment_main():
     ID_CARD_BUTTON_TITLE = B_CFG['ID_CARD_BUTTON_TITLE']
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
     POSTAL_CODE = B_CFG['POSTAL_CODE']
-    POSTAL_CODE_EDIT_AUTO_ID =['PostalCodeInput']
+    POSTAL_CODE_EDIT_AUTO_ID =B_CFG ['PostalCodeInput']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
     
@@ -72,7 +72,7 @@ def payment_main():
         main_window.child_window(title=ID_CARD_BUTTON_TITLE,control_type="Text").click_input()
 
         print(f"[*] 2.2. กรอกรหัสไปรษณีย์ '{POSTAL_CODE}'...")
-        main_window.child_window(title=POSTAL_CODE, auto_id="POSTAL_CODE_EDIT_AUTO_ID", control_type="Text").click_input()
+        main_window.child_window(title=POSTAL_CODE, auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Text").click_input()
         
         # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
         print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
