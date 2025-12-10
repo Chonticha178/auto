@@ -47,6 +47,8 @@ def payment_main():
     BUTTON_G_TITLE = B_CFG['BUTTON_G_TITLE']
     ID_CARD_BUTTON_TITLE = B_CFG['ID_CARD_BUTTON_TITLE']
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
+    POSTAL_CODE = B_CFG['POSTAL_CODE']
+    POSTAL_CODE_EDIT_AUTO_ID =['PostalCodeInput']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
     
@@ -67,17 +69,18 @@ def payment_main():
 
         # --- กด 'อ่านบัตรประชาชน' ---
         print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
-        main_window.child_window(title=ID_CARD_BUTTON_TITLE, control_type="Text").click_input()
+        main_window.child_window(title=ID_CARD_BUTTON_TITLE,control_type="Text").click_input()
 
-        # print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
-
+        print(f"[*] 2.2. กรอกรหัสไปรษณีย์ '{POSTAL_CODE}'...")
+        main_window.child_window(title=POSTAL_CODE, auto_id="POSTAL_CODE_EDIT_AUTO_ID", control_type="Text").click_input()
+        
         # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
-        print(f"[*] 2.2. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
+        print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
         main_window.type_keys(PHONE_NUMBER)
 
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
-        print(f"[*] 2.3. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         
