@@ -41,7 +41,7 @@ S_CFG = CONFIG['INSURANCE_POS_SUB_TRANSACTIONS']
 
 def insurance_main():
     BT_A_TITLE = B_CFG['BT_A_TITLE']
-    BT_G_TITLE = B_CFG['BT_G_TITLE']
+    BT_I_TITLE = B_CFG['BT_I_TITLE']
     ID_CARD_BUTTON_TITLE = B_CFG['ID_CARD_BUTTON_TITLE']
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
@@ -58,7 +58,7 @@ def insurance_main():
         time.sleep(WAIT_TIME)
         print("[/] กำลังดำเนินการในหน้า ...")
 
-        main_window.child_window(title=BT_G_TITLE, control_type="Text").click_input()
+        main_window.child_window(title=BT_I_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         print("[/] กำลังดำเนินการในหน้า ...")
 
