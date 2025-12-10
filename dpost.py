@@ -38,7 +38,6 @@ POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
 
 # ดึง Section หลัก
 B_CFG = CONFIG['DPOST_BT']
-S_CFG = CONFIG['BANK_POS_SUB_TRANSACTIONS']
 
 # ----------------- ฟังก์ชันหลัก: นำทางและกรอกข้อมูล -----------------
 
