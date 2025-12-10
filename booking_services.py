@@ -83,6 +83,7 @@ def booking_navigation_main():
         # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
         main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
         main_window.type_keys(POSTAL_CODE)
+        
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
         print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()

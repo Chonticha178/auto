@@ -70,8 +70,6 @@ def payment_main():
         # --- กด 'อ่านบัตรประชาชน' ---
         print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
         main_window.child_window(title=ID_CARD_BUTTON_TITLE,control_type="Text").click_input()
-
-
         
         # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
         print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")

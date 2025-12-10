@@ -32,6 +32,8 @@ if not CONFIG.sections():
 WINDOW_TITLE = CONFIG['GLOBAL']['WINDOW_TITLE']
 WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
+POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE']
+POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
 
 # ดึง Section หลัก
 B_CFG = CONFIG['INSURANCE_BT']
@@ -68,6 +70,11 @@ def insurance_main():
         print(f"[*] 2.3. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
         main_window.type_keys(PHONE_NUMBER)
+
+        print(f"[*] 2.3. กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
+        # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
+        main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
+        main_window.type_keys(POSTAL_CODE)
 
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
         print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
@@ -109,6 +116,102 @@ def run_insurance_service(main_window, transaction_title):
     except Exception as e:
         print(f"\n[X] FAILED: เกิดข้อผิดพลาดในการทำรายการย่อย {transaction_title}: {e}")
 
+# -------------------------------------------
+
+def insurance_navigate1():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 1)...")
+    try:
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
         
+        run_insurance_service(main_window, S_CFG['TRANSACTION_1_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def insurance_navigate2():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 2)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_2_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def insurance_navigate3():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 3)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_3_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def insurance_navigate4():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 4)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_4_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def insurance_navigate5():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 5)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_5_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+
+def insurance_navigate6():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 6)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_6_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")  
+
+def insurance_navigate7():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 2)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_7_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")              
+
+
+# ----------------- Main Execution -----------------
+
+if __name__ == "__main__":
+    insurance_main()
+
 
 
