@@ -35,7 +35,7 @@ PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
 
 
 # ดึง Section หลัก
-B_CFG = CONFIG['GOODS_PM_MAIN']
+B_CFG = CONFIG['GOODS_PM_BT']
 S_CFG = CONFIG['GOODSPM_POS_SUB_TRANSACTIONS']
 
 # ----------------- ฟังก์ชันหลัก: นำทางและกรอกข้อมูล -----------------
