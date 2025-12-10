@@ -416,11 +416,47 @@ def insurance_navigate23():
         print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")    
 
 
+def insurance_navigate24():
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' (รายการ 24)...")
+    try:
+        if not insurance_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+        
+        run_insurance_service(main_window, S_CFG['TRANSACTION_24_TITLE'])
+        
+    except Exception as e:
+        print(f"\n[X] FAILED: ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")    
 
 # ----------------- Main Execution -----------------
 
 if __name__ == "__main__":
     insurance_main()
+    insurance_navigate1()
+    insurance_navigate2()
+    insurance_navigate3()
+    insurance_navigate4()
+    insurance_navigate5()
+    insurance_navigate6()
+    insurance_navigate7()
+    insurance_navigate8()
+    insurance_navigate9()
+    insurance_navigate10()
+    insurance_navigate11()
+    insurance_navigate12()
+    insurance_navigate13()
+    insurance_navigate14()
+    insurance_navigate15()
+    insurance_navigate16()
+    insurance_navigate17()
+    insurance_navigate18()
+    insurance_navigate19()
+    insurance_navigate20()
+    insurance_navigate21()
+    insurance_navigate22()
+    insurance_navigate23()
+    insurance_navigate24()
 
 
 
