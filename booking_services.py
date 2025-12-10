@@ -34,17 +34,17 @@ WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
 
 # ดึง Section หลัก
-B_CFG = CONFIG['BANK_POS_MAIN']
-S_CFG = CONFIG['BANK_POS_SUB_TRANSACTIONS']
+B_CFG = CONFIG['BOOKING_POS_MAIN']
+S_CFG = CONFIG['BOOKING_POS_SUB_TRANSACTIONS']
 
 # ----------------- ฟังก์ชันหลัก: นำทางและกรอกข้อมูล -----------------
 
-def bank_pos_navigate_main():
+def booking_navigation_main():
     """ฟังก์ชันหลัก: นำทางเข้าหน้า 'ผู้ฝากส่ง' และกรอกข้อมูลผู้ฝากส่ง"""
     
     # 1. กำหนดตัวแปรจาก Config
-    BUTTON_A_TITLE = B_CFG['BUTTON_A_TITLE']
-    BUTTON_O_TITLE = B_CFG['BUTTON_O_TITLE']
+    BT_A_TITLE = B_CFG['BT_A_TITLE']
+    BT_O_TITLE = B_CFG['BT_O_TITLE']
     ID_CARD_BUTTON_TITLE = B_CFG['ID_CARD_BUTTON_TITLE']
     PHONE_EDIT_AUTO_ID = B_CFG['PHONE_EDIT_AUTO_ID']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
@@ -53,18 +53,18 @@ def bank_pos_navigate_main():
     AGREED_BUTTON_AUTO_ID = B_CFG['AGREED_BUTTON_AUTO_ID']
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
     
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' โดยการกดปุ่ม '{BUTTON_A_TITLE}'...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' โดยการกดปุ่ม '{BT_A_TITLE}'...")
     try:
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
         print("[/] เชื่อมต่อหน้าจอสำเร็จ ")
         
         # ========= ขั้นตอนกดปุ่มฟังก์ชัน A =========
-        main_window.child_window(title=BUTTON_A_TITLE, control_type="Text").click_input()
+        main_window.child_window(title=BT_A_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         print("[/] กำลังดำเนินการในหน้า 'ผู้ฝากส่ง'...")
 
-        main_window.child_window(title=BUTTON_O_TITLE, control_type="Text").click_input()
+        main_window.child_window(title=BT_O_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         print("[/] กำลังดำเนินการในหน้า 'ผู้ฝากส่ง'...")
     
@@ -104,4 +104,4 @@ def bank_pos_navigate_main():
 
 
 if __name__ == "__main__":
-    bank_pos_navigate_main()
+    booking_navigation_main()
