@@ -35,7 +35,6 @@ PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
 
 # ดึง Section หลัก
 B_CFG = CONFIG['BOOKING_POS_MAIN']
-S_CFG = CONFIG['BOOKING_POS_SUB_TRANSACTIONS']
 
 # ----------------- ฟังก์ชันหลัก: นำทางและกรอกข้อมูล -----------------
 
