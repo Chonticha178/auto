@@ -92,7 +92,7 @@ def run_insurance_service(main_window, transaction_title):
     """ฟังก์ชันที่ใช้ร่วมกันสำหรับรายการย่อยทั้งหมด"""
     
     # ตัวแปร config
-    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
+    TRANSINSURANCE_SERVICE_CONTROL_TYPE = S_CFG['TRANSINSURANCE_SERVICE_CONTROL_TYPE']
     NEXT_BUTTON_TITLE = B_CFG['NEXT_BUTTON_TITLE']
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
@@ -100,7 +100,7 @@ def run_insurance_service(main_window, transaction_title):
     try:
         # 2. คลิกรายการย่อย
         print(f"[*] 2. ค้นหาและคลิกรายการ: {transaction_title}")
-        main_window.child_window(title=transaction_title, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text").click_input()
+        main_window.child_window(title=transaction_title, auto_id=TRANSINSURANCE_SERVICE_CONTROL_TYPE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         
         # 3. 'ถัดไป'
