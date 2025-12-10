@@ -25,13 +25,15 @@ def read_config(filename=CONFIG_FILE):
 # โหลด config ล่วงหน้า
 CONFIG = read_config()
 if not CONFIG.sections():
-    print("ไม่สามารถโหลด config.ini ได้ โปรดตรวจสอบไฟล์และพาธ")
+    print("ไม่สามารถโหลด config.ini ได้ โปรดตรวจสอบไฟล์และพาธ") 
     sys.exit(1)
 
 # ดึงค่า Global ที่ใช้ร่วมกัน
 WINDOW_TITLE = CONFIG['GLOBAL']['WINDOW_TITLE']
 WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
+POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE']
+POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
 
 # ดึง Section หลัก
 B_CFG = CONFIG['BOOKING_POS_MAIN']
@@ -50,7 +52,9 @@ def booking_navigation_main():
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
     AGREED_BUTTON_TITLE = B_CFG['AGREED_BUTTON_TITLE']
     AGREED_BUTTON_AUTO_ID = B_CFG['AGREED_BUTTON_AUTO_ID']
+    
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
+
     
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'ตัวแทนธนาคาร' โดยการกดปุ่ม '{BT_A_TITLE}'...")
     try:
@@ -76,6 +80,10 @@ def booking_navigation_main():
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
         main_window.type_keys(PHONE_NUMBER)
 
+        print(f"[*] 2.2.5. กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
+        # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
+        main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
+        main_window.type_keys(POSTAL_CODE)
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
         print(f"[*] 2.3. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
