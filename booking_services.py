@@ -52,7 +52,6 @@ def booking_navigation_main():
     NEXT_BUTTON_AUTO_ID = B_CFG['NEXT_BUTTON_AUTO_ID']
     AGREED_BUTTON_TITLE = B_CFG['AGREED_BUTTON_TITLE']
     AGREED_BUTTON_AUTO_ID = B_CFG['AGREED_BUTTON_AUTO_ID']
-    
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
 
     
@@ -80,25 +79,25 @@ def booking_navigation_main():
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
         main_window.type_keys(PHONE_NUMBER)
 
-        print(f"[*] 2.2.5. กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
+        print(f"[*] 2.3. กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
         # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
         main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
         main_window.type_keys(POSTAL_CODE)
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
-        print(f"[*] 2.3. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
                
          # --- กด 'ถัดไป' เพื่อยืนยัน ---
-        print(f"[*] 2.4. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        print(f"[*] 2.5. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
 
-        print(f"[*] 2.5 กดปุ่ม '{AGREED_BUTTON_TITLE}' ตกลง...")
+        print(f"[*] 2.6 กดปุ่ม '{AGREED_BUTTON_TITLE}' ตกลง...")
         main_window.child_window(title=AGREED_BUTTON_TITLE, auto_id=AGREED_BUTTON_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
 
-        print(f"[*] 2.6. กดปุ่ม '{FINISH_BUTTON_TITLE}' เสร็จสิ้น...")
+        print(f"[*] 2.7. กดปุ่ม '{FINISH_BUTTON_TITLE}' เสร็จสิ้น...")
         main_window.child_window(title=FINISH_BUTTON_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
         

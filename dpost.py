@@ -32,6 +32,9 @@ if not CONFIG.sections():
 WINDOW_TITLE = CONFIG['GLOBAL']['WINDOW_TITLE']
 WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
+POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE']
+POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
+
 
 # ดึง Section หลัก
 B_CFG = CONFIG['DPOST_BT']
@@ -74,6 +77,15 @@ def DPOST_MAIN():
         print(f"[*] 2.2. กำลังค้นหาช่องกรอกด้วย ID='{PHONE_EDIT_AUTO_ID}' และกรอก: {PHONE_NUMBER}...")
         main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit").click_input()
         main_window.type_keys(PHONE_NUMBER)
+
+        print(f"[*] 2.2.1 กำลังค้นหาช่องกรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}' และกรอก: {POSTAL_CODE}...")
+        # โค้ดใช้ตัวแปร Global ที่ดึงมาจากด้านบน
+        main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit").click_input() 
+        main_window.type_keys(POSTAL_CODE)
+        # --- กด 'ถัดไป' เพื่อยืนยัน ---
+        print(f"[*] 2.3. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
+        main_window.child_window(title=NEXT_BUTTON_TITLE, auto_id=NEXT_BUTTON_AUTO_ID, control_type="Text").click_input()
+        time.sleep(WAIT_TIME)
 
         # --- กด 'ถัดไป' เพื่อยืนยัน ---
         print(f"[*] 2.3. กดปุ่ม '{NEXT_BUTTON_TITLE}' เพื่อไปหน้าถัดไป...")
