@@ -45,51 +45,123 @@ S_CFG = CONFIG['LOAN_SERVICES']
 # ==================== SCROLL HELPERS mouse ====================
 
 def force_scroll_down(window, config):
-    """เลื่อนหน้าจอลงแบบผสม (Mouse + Keyboard)"""
-    print(f"...กำลังเลื่อนหน้าจอลง...")
-    
-    # 1. โฟกัสหน้าต่างก่อนเสมอ
+    """เลื่อนหน้าจอลงโดยใช้ Mouse wheel"""
     try:
-        window.set_focus()
-    except:
-        pass
-
-    # 2. คำนวณจุดกึ่งกลางของหน้าต่าง (ชัวร์กว่า Hardcode 300,300)
-    rect = window.rectangle()
-    mid_x = rect.mid_point().x
-    mid_y = rect.mid_point().y
-    
-    # ดึงค่า Config หรือใช้ Default
-    try:
+        center_x_offset = config.getint('MOUSE_SCROLL', 'CENTER_X_OFFSET')
+        center_y_offset = config.getint('MOUSE_SCROLL', 'CENTER_Y_OFFSET')
         wheel_dist = config.getint('MOUSE_SCROLL', 'WHEEL_DIST')
-        # ถ้า config เป็น -20 อาจจะเยอะไป ลองปรับ default เป็น -5 (ลง 5 ขยัก)
-        if wheel_dist == 0: wheel_dist = -5 
-    except:
-        wheel_dist = -5
+        focus_delay = config.getfloat('MOUSE_SCROLL', 'FOCUS_DELAY')
+        scroll_delay = config.getfloat('MOUSE_SCROLL', 'SCROLL_DELAY')
+    except ValueError:
+        print("[!] Scroll config invalid. Using defaults.")
+        center_x_offset, center_y_offset, wheel_dist, focus_delay, scroll_delay = 300, 300, -20, 0.5, 1.0
+
+    print(f"...กำลังเลื่อนหน้าจอลง (Mouse Wheel {wheel_dist})...")
 
     try:
-        # วิธีที่ 1: ลองใช้ Mouse Scroll
-        # คลิกตรงกลางเพื่อให้แน่ใจว่า Focus อยู่ที่ Content
-        mouse.click(coords=(mid_x, mid_y)) 
-        time.sleep(0.5)
+        rect = window.rectangle()
+        center_x = rect.left + center_x_offset
+        center_y = rect.top + center_y_offset
         
-        # Scroll ลง
-        mouse.scroll(coords=(mid_x, mid_y), wheel_dist=wheel_dist)
-        time.sleep(1.0)
+        mouse.click(coords=(center_x, center_y))
+        time.sleep(focus_delay)
         
-        # วิธีที่ 2: (สำคัญ) ใช้ Keyboard ช่วยเสริมเสมอ
-        # ส่งปุ่ม PageDown ไปด้วย เพื่อความชัวร์ ในกรณีที่ Mouse ไม่ทำงาน
-        window.type_keys("{PGDN}")
-        
-        print("[/] ส่งคำสั่ง Scroll/PageDown เรียบร้อย")
-        
+        mouse.scroll(coords=(center_x, center_y), wheel_dist=wheel_dist)
+        time.sleep(scroll_delay)
+        print("[/] Scroll สำเร็จ")
     except Exception as e:
-        print(f"[!] Mouse Scroll Error: {e}")
-        # Fallback สุดท้าย
-        try:
-            window.type_keys("{DOWN} {DOWN} {DOWN}")
-        except:
-            pass
+        print(f"[!] Scroll failed: {e}, ใช้ PageDown แทน")
+        window.type_keys("{PGDN}")
+
+def force_scroll_down(window, config):
+    """
+    พยายามค้นหา ScrollBar หรือ Pane เพื่อเลื่อนหน้าจอ
+    1. มองหา ScrollBar แล้วกดปุ่มลูกศรลง
+    2. ถ้าไม่เจอ ให้มองหา Pane ที่ใหญ่ที่สุดแล้วหมุนเมาส์ใส่
+    """
+    print("...ระบบกำลังค้นหาจุด Scroll อัตโนมัติ...")
+    
+    # 1. พยายามหาตัว ScrollBar โดยตรง (Control Type = ScrollBar)
+    # ปกติ ScrollBar แนวตั้งมักจะมีความสูงมากกว่าความกว้าง
+    try:
+        # ค้นหา ScrollBar ทั้งหมดในหน้าต่าง
+        scroll_bars = window.descendants(control_type="ScrollBar")
+        
+        target_scrollbar = None
+        for sb in scroll_bars:
+            rect = sb.rectangle()
+            # เช็คว่าเป็นแนวตั้งหรือไม่ (สูง > กว้าง) และต้องมองเห็นได้ (width > 0)
+            if rect.height() > rect.width() and rect.width() > 0:
+                target_scrollbar = sb
+                break
+        
+        if target_scrollbar:
+            print(f"[/] พบ ScrollBar แนวตั้ง! (ตำแหน่ง: {target_scrollbar.rectangle()})")
+            
+            # วิธีที่ 1: ใช้ Pattern Scroll (ถ้า App รองรับ)
+            try:
+                # ลองสั่ง Scroll ลงแบบ 1 หน้า (LargeIncrement) หรือ ทีละนิด (SmallIncrement)
+                target_scrollbar.iface_scroll.Scroll(0, 3) # 3 = ScrollAmount_SmallIncrement
+                print(" - ใช้คำสั่ง UIA Scroll สำเร็จ")
+                return # จบฟังก์ชัน
+            except:
+                pass
+
+            # วิธีที่ 2 (ไม้ตาย): คลิกที่ปุ่มลูกศรลงของ ScrollBar
+            # คำนวณจุดล่างสุดของ ScrollBar (ลบออกนิดหน่อยเพื่อให้โดนปุ่มลูกศร)
+            sb_rect = target_scrollbar.rectangle()
+            click_point_x = sb_rect.mid_point().x
+            # คลิกที่จุด 90% ของความสูง Scrollbar (น่าจะเป็นปุ่มลูกศรลง)
+            click_point_y = sb_rect.top + int(sb_rect.height() * 0.90)
+            
+            mouse.click(coords=(click_point_x, click_point_y))
+            print(f" - คลิกที่ปุ่ม ScrollBar ด้านล่าง ({click_point_x}, {click_point_y})")
+            time.sleep(0.5)
+            return # จบฟังก์ชัน
+            
+    except Exception as e:
+        print(f"[!] ไม่สามารถจัดการ ScrollBar ได้: {e}")
+
+    # ==========================================================
+    # ถ้าหา ScrollBar ไม่เจอ หรือ Error ให้ใช้วิธีหา Content Pane
+    # ==========================================================
+    print("...ไม่พบ ScrollBar หรือกดไม่ได้ -> กำลังค้นหาพื้นที่เนื้อหา (Pane)...")
+    
+    try:
+        # หา Pane หรือ Group ทั้งหมด
+        panes = window.descendants(control_type="Pane") + window.descendants(control_type="Group")
+        
+        # เลือกอันที่มีขนาดใหญ่ที่สุด (น่าจะเป็นพื้นที่แสดงผลหลัก)
+        largest_pane = None
+        max_area = 0
+        
+        for pane in panes:
+            r = pane.rectangle()
+            area = r.width() * r.height()
+            # ต้องไม่ใหญ่เท่าหน้าต่างหลัก (เพราะนั่นคือ container ใหญ่สุด)
+            if area > max_area and area < (window.rectangle().width() * window.rectangle().height()):
+                max_area = area
+                largest_pane = pane
+        
+        if largest_pane:
+            print(f"[/] พบพื้นที่เนื้อหาขนาดใหญ่ (Area: {max_area})")
+            largest_pane.set_focus()
+            r = largest_pane.rectangle()
+            
+            # เลื่อนเมาส์ไปตรงกลาง Pane นั้น
+            mouse.move(coords=(r.mid_point().x, r.mid_point().y))
+            
+            # สั่ง Scroll ผ่าน Wrapper โดยตรง
+            largest_pane.wheel_mouse_input(wheel_dist=-5) # เลื่อนลง
+            print(" - ส่งคำสั่ง Scroll ใส่ Pane เรียบร้อย")
+        else:
+            # ทางเลือกสุดท้ายจริงๆ
+            print("[!] หาอะไรไม่เจอเลย -> ใช้ PageDown แบบ Blind")
+            window.type_keys("{PGDN}")
+            
+    except Exception as e:
+        print(f"[X] Scroll Failed ทั้งหมด: {e}")
+        window.type_keys("{PGDN}")
 
 # ==================== MAIN TEST FUNCTION ====================
 
