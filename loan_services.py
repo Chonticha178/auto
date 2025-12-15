@@ -79,7 +79,7 @@ def loan_main():
     # 1. กำหนดตัวแปรจาก Config
     BT_A_TITLE = B_CFG['BT_A_TITLE']
     BT_L_TITLE = B_CFG['BT_L_TITLE']
-    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE'] # ไม่ได้ใช้ใน main แต่ดึงมา
+    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE'] # ไม่ได้ใช้ใน main แต่ดึงมา  
     NEXT_TITLE = B_CFG['NEXT_TITLE']
     NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID'] # ไม่ได้ใช้ใน main แต่ดึงมา
     FINISH_TITLE = B_CFG['FINISH_TITLE']
@@ -223,6 +223,8 @@ def loan_services1():
 def loan_services2():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 2)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -234,6 +236,8 @@ def loan_services2():
 def loan_services3():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 3)...")
     try:
+        if not loan_main(): return
+        
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -245,6 +249,8 @@ def loan_services3():
 def loan_services4():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 4)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -256,6 +262,8 @@ def loan_services4():
 def loan_services5():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 5)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -293,6 +301,8 @@ def loan_services5():
 def loan_services6():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 6)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -330,6 +340,8 @@ def loan_services6():
 def loan_services7():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 7)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -367,6 +379,8 @@ def loan_services7():
 def loan_services8():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 8)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -404,6 +418,8 @@ def loan_services8():
 def loan_services9():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 9)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -441,6 +457,8 @@ def loan_services9():
 def loan_services10():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 10)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -478,6 +496,8 @@ def loan_services10():
 def loan_services11():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 11)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -515,6 +535,8 @@ def loan_services11():
 def loan_services12():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -552,6 +574,8 @@ def loan_services12():
 def loan_services13():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 13)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -589,6 +613,8 @@ def loan_services13():
 def loan_services14():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 14)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -626,6 +652,8 @@ def loan_services14():
 def loan_services15():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 15)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -663,6 +691,8 @@ def loan_services15():
 def loan_services16():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 16)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -700,6 +730,8 @@ def loan_services16():
 def loan_services17():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 17)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -737,6 +769,8 @@ def loan_services17():
 def loan_services18():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 18)...")
     try:
+        if not loan_main(): return
+
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -774,6 +808,8 @@ def loan_services18():
 def loan_services19():
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 19)...")
     try:
+        if not loan_main(): return
+        
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
@@ -808,7 +844,7 @@ def loan_services19():
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
-if __name__ == "main":
+if __name__ == "__main__":
     loan_main()
     loan_services1()
     loan_services2()
