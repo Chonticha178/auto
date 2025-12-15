@@ -1,6 +1,6 @@
 import configparser
 from pywinauto.application import Application
-from pywinauto import mouse 
+from pywinauto import mouse
 import time
 import os
 import sys
@@ -10,847 +10,205 @@ CONFIG_FILE = "config.ini"
 # ==================== CONFIG & HELPER FUNCTIONS ====================
 
 def read_config(filename=CONFIG_FILE):
-    """อ่านและโหลดค่าจากไฟล์ config.ini"""
     config = configparser.ConfigParser()
     try:
         if not os.path.exists(filename):
             print(f"[X] ไม่พบไฟล์ config ที่: {os.path.abspath(filename)}")
             return configparser.ConfigParser()
-            
         config.read(filename, encoding='utf-8')
         return config
     except Exception as e:
         print(f"[X] FAILED: ไม่สามารถอ่านไฟล์ {filename} ได้: {e}")
         return configparser.ConfigParser()
 
-# โหลด Config
 CONFIG = read_config()
 if not CONFIG.sections():
     print("ไม่สามารถโหลด config.ini ได้ โปรดตรวจสอบไฟล์")
-    exit() # ใช้ exit() ตามโค้ดเดิม
+    exit()
 
-# ดึงค่า Global ที่ใช้ร่วมกัน
 WINDOW_TITLE = CONFIG['GLOBAL']['WINDOW_TITLE']
 WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
 ID_CARD_BUTTON_TITLE = CONFIG['GLOBAL']['ID_CARD_BUTTON_TITLE']
 PHONE_EDIT_AUTO_ID = CONFIG['GLOBAL']['PHONE_EDIT_AUTO_ID']
-POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE'] 
+POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE']
 POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
 
-# ดึง Section หลัก
 B_CFG = CONFIG['LOAN_MAIN']
 S_CFG = CONFIG['LOAN_SERVICES']
 
-# ==================== SCROLL HELPERS mouse ====================
+# ==================== SCROLL HELPERS ====================
 
-def force_scroll_down(window, scroll_dist=-5):
-    """ฟังก์ชันช่วยเลื่อนหน้าจอลงโดยใช้ Mouse Wheel"""
+def force_scroll_down(window, scroll_dist=-10):
+    """เลื่อนหน้าจอลง (เสถียรกับ POS)"""
     try:
-        rect = window.rectangle()
-        # หาจุดกลางหน้าจอเพื่อวางเมาส์
-        center_x = rect.left + 300
-        center_y = rect.top + 300
-        
-        # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
-        mouse.click(coords=(center_x, center_y))
-        time.sleep(0.5)
-        # สั่งเลื่อนเมาส์
-        mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
-        time.sleep(1)
-    except Exception as e:
-        # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
-        window.type_keys("{PGDN}")
+        window.set_focus()
+        time.sleep(0.2)
 
-# ==================== MAIN TEST FUNCTION ====================
+        rect = window.rectangle()
+        x = rect.left + rect.width() // 2
+        y = rect.bottom - 50
+
+        mouse.move(coords=(x, y))
+        mouse.scroll(coords=(x, y), wheel_dist=scroll_dist)
+        time.sleep(0.5)
+
+    except Exception:
+        window.type_keys("{PGDN}")
+        time.sleep(0.5)
+
+def scroll_to_bottom(window, max_scrolls=10):
+    """เลื่อนหน้าจอลงจนสุด"""
+    print("[*] กำลังเลื่อนหน้าจอลงล่างสุด...")
+    for _ in range(max_scrolls):
+        force_scroll_down(window)
+    print("[/] เลื่อนถึงด้านล่างแล้ว")
+
+# ==================== MAIN FUNCTION ====================
 
 def loan_main():
-    # 1. กำหนดตัวแปรจาก Config
     BT_A_TITLE = B_CFG['BT_A_TITLE']
     BT_L_TITLE = B_CFG['BT_L_TITLE']
-    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE'] # ไม่ได้ใช้ใน main แต่ดึงมา  
     NEXT_TITLE = B_CFG['NEXT_TITLE']
-    NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID'] # ไม่ได้ใช้ใน main แต่ดึงมา
-    FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
+    NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID']
 
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' โดยการกดปุ่ม '{BT_A_TITLE}'...")
     try:
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
-        print("[/] เชื่อมต่อหน้าจอสำเร็จ ")
 
-        # 2. กด A
         main_window.child_window(title=BT_A_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
-        print("[/] เข้าสู่หน้า 'บริการสินเชื่อ'...")
 
-        # 3. กด L
         main_window.child_window(title=BT_L_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
-        print("[/] กำลังดำเนินการในหน้า 'บริการสินเชื่อ...")
 
-        # --- กด 'อ่านบัตรประชาชน' ---
-        print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
+        # อ่านบัตรประชาชน
         main_window.child_window(title=ID_CARD_BUTTON_TITLE, control_type="Text").click_input()
+        time.sleep(1)
 
-       # --- ค้นหาช่องเลขไปรษณีย์และกรอกข้อมูล ---
-        print(f"[*] 2.2.5. กำลังตรวจสอบ/กรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}'")
+        # ✅ เลื่อนลงล่างสุด
+        scroll_to_bottom(main_window)
+
+        # ===== Postal Code =====
         postal_control = main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit")
-    
-        #  [จุดที่ 1] ตรวจสอบว่าช่องปรากฏหรือไม่ ก่อน Scroll
-        if not postal_control.exists(timeout=1):
-            print("[!] ช่องไปรษณีย์ไม่ปรากฏทันที, กำลังเลื่อนหน้าจอลง...")
-        
-        # ใช้การวนลูป Scroll & Check เพื่อความแม่นยำสูงสุด
-        max_scrolls = 3
-        found = False
-        for i in range(max_scrolls):
-            force_scroll_down(main_window, CONFIG)
-            if postal_control.exists(timeout=1):
-                print("[/] ช่องไปรษณีย์พบแล้วหลังการ Scroll")
-                found = True
-                break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถหาช่องไปรษณีย์ '{POSTAL_CODE_EDIT_AUTO_ID}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return False # ยกเลิกการทำงานหากหาไม่พบ
 
-        # [จุดที่ 2] ดำเนินการกรอกข้อมูล (เมื่อแน่ใจว่าพบแล้ว)
-        if not postal_control.texts()[0].strip():
-            # ถ้าช่องว่าง (Empty) ให้ทำการกรอก
-            print(f" [-] -> ช่องว่าง, กรอก: {POSTAL_CODE}")
-            postal_control.click_input() 
-            main_window.type_keys(POSTAL_CODE)
-        else:
-            print(f" [-] -> ช่องมีค่าอยู่แล้ว: {postal_control.texts()[0].strip()}, ข้ามการกรอก")
-        time.sleep(0.5)
-    
-        # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
-        print(f"[*] 2.2. กำลังตรวจสอบ/กรอกเบอร์โทรศัพท์ ID='{PHONE_EDIT_AUTO_ID}'")
-        phone_control = main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit")
-    
-        # [จุดที่ 2] ตรวจสอบ/Scroll ซ้ำเพื่อหาช่องเบอร์โทรศัพท์
-        if not phone_control.exists(timeout=1):
-            print("[!] ช่องเบอร์โทรศัพท์ไม่ปรากฏทันที, กำลังตรวจสอบ/เลื่อนหน้าจอซ้ำ...")
-        
-        max_scrolls = 3
         found = False
-        for i in range(max_scrolls):
-            force_scroll_down(main_window, CONFIG)
-            if phone_control.exists(timeout=1):
-                print("[/] ช่องเบอร์โทรศัพท์พบแล้วหลังการ Scroll")
+        for _ in range(3):
+            if postal_control.exists(timeout=1):
                 found = True
                 break
-        
+            force_scroll_down(main_window)
+
         if not found:
-            print(f"[X] FAILED: ไม่สามารถหาช่องเบอร์โทรศัพท์ '{PHONE_EDIT_AUTO_ID}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return False # ยกเลิกการทำงานหากหาไม่พบ
-    
-        #  [จุดที่ 3] ดำเนินการกรอกข้อมูล (เมื่อแน่ใจว่าพบแล้ว)
+            print("[X] ไม่พบช่องไปรษณีย์")
+            return False
+
+        if not postal_control.texts()[0].strip():
+            postal_control.click_input()
+            main_window.type_keys(POSTAL_CODE)
+
+        # ===== Phone =====
+        phone_control = main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit")
+
+        found = False
+        for _ in range(3):
+            if phone_control.exists(timeout=1):
+                found = True
+                break
+            force_scroll_down(main_window)
+
+        if not found:
+            print("[X] ไม่พบช่องเบอร์โทรศัพท์")
+            return False
+
         if not phone_control.texts()[0].strip():
-            print(f" [-] -> ช่องว่าง, กรอก: {PHONE_NUMBER}")
             phone_control.click_input()
             main_window.type_keys(PHONE_NUMBER)
-        else:
-            print(f" [-] -> ช่องมีค่าอยู่แล้ว: {phone_control.texts()[0].strip()}, ข้ามการกรอก")
-        time.sleep(0.5)
 
-    # --- กด 'ถัดไป' เพื่อยืนยัน ---
-        print(f"[*] 2.3. กดปุ่ม '{NEXT_TITLE}' เพื่อไปหน้าถัดไป...")
+        # Next
         main_window.child_window(title=NEXT_TITLE, auto_id=NEXT_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
-    
-        print("\n[V] SUCCESS: ดำเนินการขั้นตอน สำเร็จ!")
+
+        print("[V] SUCCESS")
         return True
+
     except Exception as e:
-        print(f"\n[X] FAILED: เกิดข้อผิดพลาดใน : {e}")
+        print(f"[X] FAILED: {e}")
         return False
-    
-# ----------------- ฟังก์ชันแม่แบบสำหรับรายการย่อย -----------------
+
+# ==================== TRANSACTION ====================
 
 def loan_transaction(main_window, transaction_title):
-    """ฟังก์ชันที่ใช้ร่วมกันสำหรับรายการย่อยทั้งหมด"""
-    
-    # 1. กำหนดตัวแปรจาก Config
-    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
     NEXT_TITLE = B_CFG['NEXT_TITLE']
     NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID']
     FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
-    
+    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
+
     try:
-        # 2. คลิกรายการย่อย
-        print(f"[*] 2. ค้นหาและคลิกรายการ: {transaction_title}")
-        main_window.child_window(title=transaction_title, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text").click_input()
+        main_window.child_window(
+            title=transaction_title,
+            auto_id=TRANSACTION_CONTROL_TYPE,
+            control_type="Text"
+        ).click_input()
+
         time.sleep(WAIT_TIME)
-        
-        # 3. คลิก 'ถัดไป'
-        print(f"[*] 3. กดปุ่ม '{NEXT_TITLE}'")
+
         main_window.child_window(title=NEXT_TITLE, auto_id=NEXT_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
-        
-        # 4. คลิก 'เสร็จสิ้น'
-        print(f"[*] 4. กดปุ่ม '{FINISH_BUTTON_TITLE}'")
+
         main_window.child_window(title=FINISH_BUTTON_TITLE, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
-        
-    except Exception as e:
-        print(f"\n[X] FAILED: เกิดข้อผิดพลาดในการทำรายการย่อย {transaction_title}: {e}")
-
-# ---------------ฟังก์ชันย่อยตามโครงสร้างเดิม (เรียกใช้ Config)---------------------
-
-def loan_services1():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 1)...")
-    try:
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        loan_transaction(main_window, S_CFG['LOAN_1_TITLE'])
 
     except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+        print(f"[X] FAILED {transaction_title}: {e}")
 
-def loan_services2():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 2)...")
-    try:
-        if not loan_main(): return
+# ==================== SERVICES ====================
 
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
+def run_service(service_key):
+    if not loan_main():
+        return
+    app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+    main_window = app.top_window()
 
-        loan_transaction(main_window, S_CFG['LOAN_2_TITLE'])
+    title = S_CFG[service_key]
+    target = main_window.child_window(
+        title=title,
+        auto_id=S_CFG['TRANSACTION_CONTROL_TYPE'],
+        control_type="Text"
+    )
 
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services3():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 3)...")
-    try:
-        if not loan_main(): return
-        
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        loan_transaction(main_window, S_CFG['LOAN_3_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services4():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 4)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        loan_transaction(main_window, S_CFG['LOAN_4_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services5():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 5)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_5_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
+    found = False
+    for _ in range(5):
+        if target.exists(timeout=1):
             found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
+            break
+        force_scroll_down(main_window)
 
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+    if not found:
+        print(f"[X] ไม่พบ {title}")
+        return
 
-def loan_services6():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 6)...")
-    try:
-        if not loan_main(): return
+    loan_transaction(main_window, title)
 
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_6_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services7():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 7)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_7_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services8():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 8)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_8_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services9():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 9)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_9_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-    
-def loan_services10():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 10)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_10_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services11():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 11)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_11_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services12():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_12_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services13():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 13)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_13_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services14():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 14)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_14_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services15():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 15)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_15_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services16():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 16)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_16_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services17():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 17)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_17_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services18():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 18)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_18_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
-
-def loan_services19():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 19)...")
-    try:
-        if not loan_main(): return
-
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-         # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_19_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window, SERVICE_TITLE)
-
-    except Exception as e:
-        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
+def loan_services1(): run_service('LOAN_1_TITLE')
+def loan_services2(): run_service('LOAN_2_TITLE')
+def loan_services3(): run_service('LOAN_3_TITLE')
+def loan_services4(): run_service('LOAN_4_TITLE')
+def loan_services5(): run_service('LOAN_5_TITLE')
+def loan_services6(): run_service('LOAN_6_TITLE')
+def loan_services7(): run_service('LOAN_7_TITLE')
+def loan_services8(): run_service('LOAN_8_TITLE')
+def loan_services9(): run_service('LOAN_9_TITLE')
+def loan_services10(): run_service('LOAN_10_TITLE')
+def loan_services11(): run_service('LOAN_11_TITLE')
+def loan_services12(): run_service('LOAN_12_TITLE')
+def loan_services13(): run_service('LOAN_13_TITLE')
+def loan_services14(): run_service('LOAN_14_TITLE')
+def loan_services15(): run_service('LOAN_15_TITLE')
+def loan_services16(): run_service('LOAN_16_TITLE')
+def loan_services17(): run_service('LOAN_17_TITLE')
+def loan_services18(): run_service('LOAN_18_TITLE')
+def loan_services19(): run_service('LOAN_19_TITLE')
 
 if __name__ == "__main__":
     loan_main()
-    loan_services1()
-    loan_services2()
-    loan_services3()
-    loan_services4()
-    loan_services5()
-    loan_services6()
-    loan_services7()
-    loan_services8()
-    loan_services9()
-    loan_services10()
-    loan_services11()
-    loan_services12()
-    loan_services13()
-    loan_services14()
-    loan_services15()
-    loan_services16()
-    loan_services17()
-    loan_services18()
-    loan_services19()
