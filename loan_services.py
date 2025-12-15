@@ -45,33 +45,51 @@ S_CFG = CONFIG['LOAN_SERVICES']
 # ==================== SCROLL HELPERS mouse ====================
 
 def force_scroll_down(window, config):
-    """เลื่อนหน้าจอลงโดยใช้ Mouse wheel"""
+    """เลื่อนหน้าจอลงแบบผสม (Mouse + Keyboard)"""
+    print(f"...กำลังเลื่อนหน้าจอลง...")
+    
+    # 1. โฟกัสหน้าต่างก่อนเสมอ
     try:
-        center_x_offset = config.getint('MOUSE_SCROLL', 'CENTER_X_OFFSET')
-        center_y_offset = config.getint('MOUSE_SCROLL', 'CENTER_Y_OFFSET')
+        window.set_focus()
+    except:
+        pass
+
+    # 2. คำนวณจุดกึ่งกลางของหน้าต่าง (ชัวร์กว่า Hardcode 300,300)
+    rect = window.rectangle()
+    mid_x = rect.mid_point().x
+    mid_y = rect.mid_point().y
+    
+    # ดึงค่า Config หรือใช้ Default
+    try:
         wheel_dist = config.getint('MOUSE_SCROLL', 'WHEEL_DIST')
-        focus_delay = config.getfloat('MOUSE_SCROLL', 'FOCUS_DELAY')
-        scroll_delay = config.getfloat('MOUSE_SCROLL', 'SCROLL_DELAY')
-    except ValueError:
-        print("[!] Scroll config invalid. Using defaults.")
-        center_x_offset, center_y_offset, wheel_dist, focus_delay, scroll_delay = 300, 300, -20, 0.5, 1.0
-
-    print(f"...กำลังเลื่อนหน้าจอลง (Mouse Wheel {wheel_dist})...")
+        # ถ้า config เป็น -20 อาจจะเยอะไป ลองปรับ default เป็น -5 (ลง 5 ขยัก)
+        if wheel_dist == 0: wheel_dist = -5 
+    except:
+        wheel_dist = -5
 
     try:
-        rect = window.rectangle()
-        center_x = rect.left + center_x_offset
-        center_y = rect.top + center_y_offset
+        # วิธีที่ 1: ลองใช้ Mouse Scroll
+        # คลิกตรงกลางเพื่อให้แน่ใจว่า Focus อยู่ที่ Content
+        mouse.click(coords=(mid_x, mid_y)) 
+        time.sleep(0.5)
         
-        mouse.click(coords=(center_x, center_y))
-        time.sleep(focus_delay)
+        # Scroll ลง
+        mouse.scroll(coords=(mid_x, mid_y), wheel_dist=wheel_dist)
+        time.sleep(1.0)
         
-        mouse.scroll(coords=(center_x, center_y), wheel_dist=wheel_dist)
-        time.sleep(scroll_delay)
-        print("[/] Scroll สำเร็จ")
-    except Exception as e:
-        print(f"[!] Scroll failed: {e}, ใช้ PageDown แทน")
+        # วิธีที่ 2: (สำคัญ) ใช้ Keyboard ช่วยเสริมเสมอ
+        # ส่งปุ่ม PageDown ไปด้วย เพื่อความชัวร์ ในกรณีที่ Mouse ไม่ทำงาน
         window.type_keys("{PGDN}")
+        
+        print("[/] ส่งคำสั่ง Scroll/PageDown เรียบร้อย")
+        
+    except Exception as e:
+        print(f"[!] Mouse Scroll Error: {e}")
+        # Fallback สุดท้าย
+        try:
+            window.type_keys("{DOWN} {DOWN} {DOWN}")
+        except:
+            pass
 
 # ==================== MAIN TEST FUNCTION ====================
 
