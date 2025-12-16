@@ -404,116 +404,171 @@ def loan_services10():
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
-# ==================== SERVICES 11-19 (SEARCH MODE) ====================
+# # ==================== SERVICES 11-19 (SEARCH MODE) ====================
+
+# def loan_services11():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 11)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         # ใช้การค้นหาด้วยเลข "11"
+#         search_and_select_transaction(main_window, "50672", S_CFG['LOAN_11_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services12():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "50672", S_CFG['LOAN_12_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services13():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 13)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "50696", S_CFG['LOAN_13_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services14():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 14)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "50836", S_CFG['LOAN_14_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services15():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 15)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "50856", S_CFG['LOAN_15_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services16():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 16)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "50930", S_CFG['LOAN_16_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services17():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 17)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "51008", S_CFG['LOAN_17_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services18():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 18)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "52040", S_CFG['LOAN_18_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# def loan_services19():
+#     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 19)...")
+#     try:
+#         if not loan_main(): return
+#         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+#         main_window = app.top_window()
+
+#         search_and_select_transaction(main_window, "52043", S_CFG['LOAN_19_TITLE'])
+
+#     except Exception as e:
+#         print(f"\n[x] FAILED: {e}")
+
+# ==================== SERVICES 11-19 (Config Variable Mode) ====================
+
+def run_service_by_config(service_num):
+    """ฟังก์ชันช่วยรัน โดยดึงค่า CODE และ TITLE จาก Config ตามเลขข้อ"""
+    print(f"\n{'='*50}\n[*] กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ {service_num})...")
+    try:
+        # 1. เข้าหน้า Main
+        if not loan_main(): return
+        
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+
+        # 2. ดึงค่าจาก Config
+        # สร้าง Key อัตโนมัติ เช่น 'LOAN_18_CODE' และ 'LOAN_18_TITLE'
+        code_key = f'LOAN_{service_num}_CODE'
+        title_key = f'LOAN_{service_num}_TITLE'
+        
+        search_code = S_CFG[code_key]   # ดึงเลขรหัส (เช่น 52040)
+        target_title = S_CFG[title_key] # ดึงชื่อปุ่ม (เช่น 52040)
+
+        # 3. ส่งค่าตัวแปรไปค้นหาและคลิก
+        search_and_select_transaction(main_window, search_code, target_title)
+
+    except Exception as e:
+        print(f"\n[x] FAILED รายการ {service_num}: {e}")
+
+# ----- ฟังก์ชันเรียกใช้งาน -----
 
 def loan_services11():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 11)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        # ใช้การค้นหาด้วยเลข "11"
-        search_and_select_transaction(main_window, "50672", S_CFG['LOAN_11_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("11")
 
 def loan_services12():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "50672", S_CFG['LOAN_12_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("12")
 
 def loan_services13():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 13)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "50696", S_CFG['LOAN_13_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("13")
 
 def loan_services14():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 14)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "50836", S_CFG['LOAN_14_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("14")
 
 def loan_services15():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 15)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "50856", S_CFG['LOAN_15_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("15")
 
 def loan_services16():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 16)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "50930", S_CFG['LOAN_16_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("16")
 
 def loan_services17():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 17)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "51008", S_CFG['LOAN_17_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("17")
 
 def loan_services18():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 18)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "52040", S_CFG['LOAN_18_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("18")
 
 def loan_services19():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 19)...")
-    try:
-        if not loan_main(): return
-        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-        main_window = app.top_window()
-
-        search_and_select_transaction(main_window, "52043", S_CFG['LOAN_19_TITLE'])
-
-    except Exception as e:
-        print(f"\n[x] FAILED: {e}")
+    run_service_by_config("19")
 
 if __name__ == "__main__":
     loan_main()
