@@ -44,47 +44,23 @@ S_CFG = CONFIG['LOAN_SERVICES']
 
 # ==================== SCROLL HELPERS mouse ====================
 
-# def force_scroll_down(main_window, scroll_dist=-5):
-#     """ฟังก์ชันช่วยเลื่อนหน้าจอลงโดยใช้ Mouse Wheel"""
-#     try:
-#         rect = main_window.rectangle()
-#         # หาจุดกลางหน้าจอเพื่อวางเมาส์
-#         center_x = rect.left + 300
-#         center_y = rect.top + 300
+def force_scroll_down(main_window, scroll_dist=-5):
+    """ฟังก์ชันช่วยเลื่อนหน้าจอลงโดยใช้ Mouse Wheel"""
+    try:
+        rect = main_window.rectangle()
+        # หาจุดกลางหน้าจอเพื่อวางเมาส์
+        center_x = rect.left + 300
+        center_y = rect.top + 300
         
-#         # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
-#         mouse.click(coords=(center_x, center_y))
-#         time.sleep(0.5)
-#         # สั่งเลื่อนเมาส์
-#         mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
-#         time.sleep(1)
-#     except Exception as e:
-#         # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
-#         main_window.type_keys("{PGDN}")
-
-def force_scroll_down(main_window, title, auto_id, max_scrolls=10):
-    target = main_window.child_window(
-        title=title,
-        auto_id=auto_id,
-        control_type="Text"
-    )
-
-    print(f"[*] กำลังค้นหา '{title}' ...")
-
-    if target.exists(timeout=1):
-        print("[/] พบรายการทันที ไม่ต้อง scroll")
-        return True
-
-    print("[*] ไม่พบ เริ่ม scroll ลง...")
-    for i in range(max_scrolls):
-        force_scroll_down(main_window, scrolls=1)
-        if target.exists(timeout=1):
-            print(f"[/] พบรายการหลัง scroll ครั้งที่ {i+1}")
-            return True
-
-    print(f"[X] ไม่พบ '{title}' หลัง scroll {max_scrolls} ครั้ง")
-    return False
-
+        # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
+        mouse.click(coords=(center_x, center_y))
+        time.sleep(0.5)
+        # สั่งเลื่อนเมาส์
+        mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
+        time.sleep(1)
+    except Exception as e:
+        # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
+        main_window.type_keys("{PGDN}")
 
     
 
