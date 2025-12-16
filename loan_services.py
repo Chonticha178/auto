@@ -544,10 +544,42 @@ def run_service_by_config(service_num):
 # ----- ฟังก์ชันเรียกใช้งาน -----
 
 def loan_services11():
-    run_service_by_config("11")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 11)...")
+    try:
+        if not loan_main(): return
+
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+
+        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
+        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
+        search_and_select_transaction(
+            main_window, 
+            S_CFG['LOAN_11_CODE'],   # รหัสค้นหา (เช่น 50636)
+            S_CFG['LOAN_11_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+        )
+
+    except Exception as e:
+        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services12():
-    run_service_by_config("12")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    try:
+        if not loan_main(): return
+
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+
+        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
+        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
+        search_and_select_transaction(
+            main_window, 
+            S_CFG['LOAN_12_CODE'],   # รหัสค้นหา (เช่น 50636)
+            S_CFG['LOAN_12_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+        )
+
+    except Exception as e:
+        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services13():
     run_service_by_config("13")
@@ -568,7 +600,22 @@ def loan_services18():
     run_service_by_config("18")
 
 def loan_services19():
-    run_service_by_config("19")
+    print(f"\n{'='*50}\n[*] พิเศษ: กำลังทำรายการ 19 (แบบเขียนแยกเอง)...")
+    
+    # 1. เรียก Logic ส่วนกลางมาใช้ (ถ้าต้องการ)
+    if not loan_main(): return
+    app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+    
+    # 2. ดึงค่า Config มาเอง
+    code = S_CFG['LOAN_19_CODE']
+    title = S_CFG['LOAN_19_TITLE']
+    
+    # 3. สั่งค้นหาและทำรายการ
+    # (ตรงนี้คุณสามารถแทรกคำสั่งพิเศษเฉพาะของข้อ 19 ได้)
+    print("--- ขั้นตอนพิเศษเฉพาะข้อ 19 ---")
+    time.sleep(5) 
+    
+    search_and_select_transaction(app.top_window(), code, title)
 
 if __name__ == "__main__":
     loan_main()
