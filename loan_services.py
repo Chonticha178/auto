@@ -35,7 +35,7 @@ WAIT_TIME = CONFIG.getint('GLOBAL', 'WAIT_TIME_SEC')
 PHONE_NUMBER = CONFIG['GLOBAL']['PHONE_NUMBER']
 ID_CARD_BUTTON_TITLE = CONFIG['GLOBAL']['ID_CARD_BUTTON_TITLE']
 PHONE_EDIT_AUTO_ID = CONFIG['GLOBAL']['PHONE_EDIT_AUTO_ID']
-POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID'] 
+POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE'] 
 
 # ดึง Section หลัก
 B_CFG = CONFIG['LOAN_MAIN']
@@ -95,8 +95,8 @@ def loan_main():
         main_window.child_window(title=ID_CARD_BUTTON_TITLE, control_type="Text").click_input()
 
        # --- ค้นหาช่องเลขไปรษณีย์และกรอกข้อมูล ---
-        print(f"[*] 2.2.5. กำลังตรวจสอบ/กรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}'")
-        postal_control = main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit")
+        print(f"[*] 2.2.5. กำลังตรวจสอบ/กรอกเลขไปรษณีย์ ID='{POSTAL_CODE}'")
+        postal_control = main_window.child_window(auto_id=POSTAL_CODE, control_type="Edit")
     
         #  [จุดที่ 1] ตรวจสอบว่าช่องปรากฏหรือไม่ ก่อน Scroll
         if not postal_control.exists(timeout=1):
@@ -116,15 +116,15 @@ def loan_main():
 
         
         if not found:
-            print(f"[X] FAILED: ไม่สามารถหาช่องไปรษณีย์ '{POSTAL_CODE_EDIT_AUTO_ID}' ได้หลัง Scroll {max_scrolls} ครั้ง")
+            print(f"[X] FAILED: ไม่สามารถหาช่องไปรษณีย์ '{POSTAL_CODE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
             return False # ยกเลิกการทำงานหากหาไม่พบ
 
         # [จุดที่ 2] ดำเนินการกรอกข้อมูล (เมื่อแน่ใจว่าพบแล้ว)
         if not postal_control.texts()[0].strip():
             # ถ้าช่องว่าง (Empty) ให้ทำการกรอก
-            print(f" [-] -> ช่องว่าง, กรอก: {POSTAL_CODE_EDIT_AUTO_ID}")
+            print(f" [-] -> ช่องว่าง, กรอก: {POSTAL_CODE}")
             postal_control.click_input() 
-            main_window.type_keys(POSTAL_CODE_EDIT_AUTO_ID)
+            main_window.type_keys(POSTAL_CODE)
         else:
             print(f" [-] -> ช่องมีค่าอยู่แล้ว: {postal_control.texts()[0].strip()}, ข้ามการกรอก")
         time.sleep(0.5)
