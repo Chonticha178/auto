@@ -294,7 +294,7 @@ def loan_services4():
         loan_transaction(main_window, S_CFG['LOAN_4_TITLE'])
 
     except Exception as e:
-        
+
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services5():
@@ -414,7 +414,7 @@ def loan_services11():
         main_window = app.top_window()
 
         # ใช้การค้นหาด้วยเลข "11"
-        search_and_select_transaction(main_window, "11", S_CFG['LOAN_11_TITLE'])
+        search_and_select_transaction(main_window, "50672", S_CFG['LOAN_11_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -426,7 +426,7 @@ def loan_services12():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "12", S_CFG['LOAN_12_TITLE'])
+        search_and_select_transaction(main_window, "50672", S_CFG['LOAN_12_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -438,7 +438,7 @@ def loan_services13():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "13", S_CFG['LOAN_13_TITLE'])
+        search_and_select_transaction(main_window, "50696", S_CFG['LOAN_13_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -450,7 +450,7 @@ def loan_services14():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "14", S_CFG['LOAN_14_TITLE'])
+        search_and_select_transaction(main_window, "50836", S_CFG['LOAN_14_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -462,7 +462,7 @@ def loan_services15():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "15", S_CFG['LOAN_15_TITLE'])
+        search_and_select_transaction(main_window, "50856", S_CFG['LOAN_15_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -474,7 +474,7 @@ def loan_services16():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "16", S_CFG['LOAN_16_TITLE'])
+        search_and_select_transaction(main_window, "50930", S_CFG['LOAN_16_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -486,7 +486,7 @@ def loan_services17():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "17", S_CFG['LOAN_17_TITLE'])
+        search_and_select_transaction(main_window, "51008", S_CFG['LOAN_17_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -498,7 +498,7 @@ def loan_services18():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "18", S_CFG['LOAN_18_TITLE'])
+        search_and_select_transaction(main_window, "52040", S_CFG['LOAN_18_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
@@ -510,7 +510,7 @@ def loan_services19():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        search_and_select_transaction(main_window, "19", S_CFG['LOAN_19_TITLE'])
+        search_and_select_transaction(main_window, "52043", S_CFG['LOAN_19_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED: {e}")
