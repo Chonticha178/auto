@@ -44,31 +44,47 @@ S_CFG = CONFIG['LOAN_SERVICES']
 
 # ==================== SCROLL HELPERS mouse ====================
 
-def force_scroll_down(main_window):
-    """ฟังก์ชันช่วยเลื่อนหน้าจอลงโดยใช้ Mouse Wheel"""
-    try:
-        main_window.set_focus()
-        time.sleep(0.3)
-        main_window.type_keys("{PGDN}")
-        time.sleep(0.5)
-    except Exception as e:
-        print("[!] Scroll failed:", e)
-
-    # try:
-    #     rect = main_window.rectangle()
-    #     # หาจุดกลางหน้าจอเพื่อวางเมาส์
-    #     center_x = rect.left + 300
-    #     center_y = rect.top + 300
+# def force_scroll_down(main_window, scroll_dist=-5):
+#     """ฟังก์ชันช่วยเลื่อนหน้าจอลงโดยใช้ Mouse Wheel"""
+#     try:
+#         rect = main_window.rectangle()
+#         # หาจุดกลางหน้าจอเพื่อวางเมาส์
+#         center_x = rect.left + 300
+#         center_y = rect.top + 300
         
-    #     # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
-    #     mouse.click(coords=(center_x, center_y))
-    #     time.sleep(0.5)
-    #     # สั่งเลื่อนเมาส์
-    #     mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
-    #     time.sleep(1)
-    # except Exception as e:
-    #     # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
-    #     main_window.type_keys("{PGDN}")
+#         # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
+#         mouse.click(coords=(center_x, center_y))
+#         time.sleep(0.5)
+#         # สั่งเลื่อนเมาส์
+#         mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
+#         time.sleep(1)
+#     except Exception as e:
+#         # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
+#         main_window.type_keys("{PGDN}")
+
+def force_scroll_down(main_window, title, auto_id, max_scrolls=10):
+    target = main_window.child_window(
+        title=title,
+        auto_id=auto_id,
+        control_type="Text"
+    )
+
+    print(f"[*] กำลังค้นหา '{title}' ...")
+
+    if target.exists(timeout=1):
+        print("[/] พบรายการทันที ไม่ต้อง scroll")
+        return True
+
+    print("[*] ไม่พบ เริ่ม scroll ลง...")
+    for i in range(max_scrolls):
+        force_scroll_down(main_window, scrolls=1)
+        if target.exists(timeout=1):
+            print(f"[/] พบรายการหลัง scroll ครั้งที่ {i+1}")
+            return True
+
+    print(f"[X] ไม่พบ '{title}' หลัง scroll {max_scrolls} ครั้ง")
+    return False
+
 
     
 
@@ -149,7 +165,7 @@ def loan_main():
         max_scrolls = 3
         found = False
         for i in range(max_scrolls):
-            force_scroll_down(main_window)
+            force_scroll_down(main_window, CONFIG)
             if phone_control.exists(timeout=1):
                 print("[/] ช่องเบอร์โทรศัพท์พบแล้วหลังการ Scroll")
                 found = True
@@ -368,7 +384,7 @@ def loan_services11():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -407,7 +423,7 @@ def loan_services12():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -446,7 +462,7 @@ def loan_services13():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -485,7 +501,7 @@ def loan_services14():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -524,7 +540,7 @@ def loan_services15():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -563,7 +579,7 @@ def loan_services16():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -602,7 +618,7 @@ def loan_services17():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -641,7 +657,7 @@ def loan_services18():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -680,7 +696,7 @@ def loan_services19():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window) 
+                force_scroll_down(main_window, CONFIG) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
