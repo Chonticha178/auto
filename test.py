@@ -37,7 +37,8 @@ ID_CARD_BUTTON_TITLE = CONFIG['GLOBAL']['ID_CARD_BUTTON_TITLE']
 PHONE_EDIT_AUTO_ID = CONFIG['GLOBAL']['PHONE_EDIT_AUTO_ID']
 POSTAL_CODE = CONFIG['GLOBAL']['POSTAL_CODE'] 
 POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID'] 
-SEARCH_BOX_AUTO_ID = CONFIG['GLOBAL']['SEARCH_BOX_AUTO_ID']
+# SEARCH_BOX_AUTO_ID = CONFIG['GLOBAL']['SEARCH_BOX_AUTO_ID']
+SEARCH_BOX_ID = CONFIG.get('GLOBAL', 'SEARCH_BOX_AUTO_ID', fallback='SearchTextBox') 
 
 # ดึง Section หลัก
 B_CFG = CONFIG['LOAN_MAIN']
@@ -71,7 +72,7 @@ def search_and_select_transaction(main_window, search_text, target_title):
     """
     # ดึง ID ช่องค้นหาจาก Config (ต้องเพิ่มใน config.ini)
     # ถ้าไม่มีใน config ให้ลองใช้ค่า default หรือปล่อยว่าง
-    SEARCH_BOX_ID = CONFIG.get('GLOBAL', 'SEARCH_BOX_AUTO_ID', fallback='SearchTextBox') 
+    # SEARCH_BOX_ID = CONFIG.get('GLOBAL', 'SEARCH_BOX_AUTO_ID', fallback='SearchTextBox') 
     TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
 
     print(f"[*] กำลังค้นหารายการด้วยรหัส: {search_text} ...")
