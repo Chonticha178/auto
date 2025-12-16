@@ -41,7 +41,6 @@ POSTAL_CODE_EDIT_AUTO_ID = CONFIG['GLOBAL']['POSTAL_CODE_EDIT_AUTO_ID']
 # ดึง Section หลัก
 B_CFG = CONFIG['LOAN_MAIN']
 S_CFG = CONFIG['LOAN_SERVICES']
-
 # ==================== SCROLL HELPERS mouse ====================
 
 def force_scroll_down(window, scroll_dist=-5):
@@ -55,26 +54,27 @@ def force_scroll_down(window, scroll_dist=-5):
         # คลิกเพื่อให้หน้าจอ Focus ก่อนเลื่อน
         mouse.click(coords=(center_x, center_y))
         time.sleep(0.5)
+        
         # สั่งเลื่อนเมาส์
+        # ค่า scroll_dist ติดลบ = เลื่อนลง, บวก = เลื่อนขึ้น
+        print(f" [*] Action: Scrolling mouse ({scroll_dist})...")
         mouse.scroll(coords=(center_x, center_y), wheel_dist=scroll_dist)
         time.sleep(1)
     except Exception as e:
         # ถ้าใช้เมาส์ไม่ได้ ให้ลองกดปุ่ม Page Down แทน
+        print(f" [!] Scroll Error: {e}, using PGDN instead.")
         window.type_keys("{PGDN}")
 
-    
 
-# ==================== MAIN TEST FUNCTION ====================
+# ==================== MAIN TEST FUNCTION (UPDATED) ====================
 
 def loan_main():
     # 1. กำหนดตัวแปรจาก Config
     BT_A_TITLE = B_CFG['BT_A_TITLE']
     BT_L_TITLE = B_CFG['BT_L_TITLE']
-    TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE'] # ไม่ได้ใช้ใน main แต่ดึงมา  
     NEXT_TITLE = B_CFG['NEXT_TITLE']
-    NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID'] # ไม่ได้ใช้ใน main แต่ดึงมา
-    FINISH_BUTTON_TITLE = B_CFG['FINISH_BUTTON_TITLE']
-
+    NEXT_AUTO_ID = B_CFG['NEXT_AUTO_ID']
+    
     print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' โดยการกดปุ่ม '{BT_A_TITLE}'...")
     try:
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
@@ -94,83 +94,72 @@ def loan_main():
         # --- กด 'อ่านบัตรประชาชน' ---
         print(f"[*] 2.1. ค้นหาและคลิกปุ่ม '{ID_CARD_BUTTON_TITLE}'...")
         main_window.child_window(title=ID_CARD_BUTTON_TITLE, control_type="Text").click_input()
+        time.sleep(1) # รอโหลดสักครู่
 
-       # --- ค้นหาช่องเลขไปรษณีย์และกรอกข้อมูล ---
-        print(f"[*] 2.2.5. กำลังตรวจสอบ/กรอกเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}'")
+        # ==========================================================
+        # [MODIFIED] เลื่อนเมาส์ลงก่อน (Scroll First) ตามความต้องการ
+        # ==========================================================
+        print("[*] 2.1.5 บังคับเลื่อนหน้าจอลง (Scroll Down) เพื่อหาช่องกรอกข้อมูล...")
+        force_scroll_down(main_window, scroll_dist=-10) # เลื่อนลงเยอะหน่อย (-10) เพื่อให้แน่ใจว่าเห็น
+        time.sleep(1) 
+
+        # --- ค้นหาช่องเลขไปรษณีย์และกรอกข้อมูล ---
+        print(f"[*] 2.2. กำลังค้นหาช่องเลขไปรษณีย์ ID='{POSTAL_CODE_EDIT_AUTO_ID}'")
         postal_control = main_window.child_window(auto_id=POSTAL_CODE_EDIT_AUTO_ID, control_type="Edit")
     
-        #  [จุดที่ 1] ตรวจสอบว่าช่องปรากฏหรือไม่ ก่อน Scroll
-        if not postal_control.exists(timeout=1):
-            print("[!] ช่องไปรษณีย์ไม่ปรากฏทันที, กำลังเลื่อนหน้าจอลง...")
-        
-        # ใช้การวนลูป Scroll & Check เพื่อความแม่นยำสูงสุด
-        max_scrolls = 3
-        found = False
-        for i in range(max_scrolls):
-            force_scroll_down(main_window, CONFIG)
-            if postal_control.exists(timeout=1):
-                print("[/] ช่องไปรษณีย์พบแล้วหลังการ Scroll")
-                found = True
-                break
-
-            # ถ้ายังไม่เจอ ให้เลื่อนจอลง
-            print(f"[Rotate {i+1}] หาช่องไม่เจอ... กำลังเลื่อนหน้าจอลง...")
+        # ตรวจสอบว่าเจอหรือไม่ (หลังจาก Scroll มาแล้ว)
+        if not postal_control.exists(timeout=2):
+            print("[!] ยังไม่เจอช่องไปรษณีย์... ลอง Scroll เพิ่มอีกครั้ง")
             force_scroll_down(main_window, scroll_dist=-5)
-            time.sleep(1)
         
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถหาช่องไปรษณีย์ '{POSTAL_CODE_EDIT_AUTO_ID}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return False # ยกเลิกการทำงานหากหาไม่พบ
-
-        # [จุดที่ 2] ดำเนินการกรอกข้อมูล (เมื่อแน่ใจว่าพบแล้ว)
-        if not postal_control.texts()[0].strip():
-            # ถ้าช่องว่าง (Empty) ให้ทำการกรอก
-            print(f" [-] -> ช่องว่าง, กรอก: {POSTAL_CODE}")
-            postal_control.click_input() 
-            main_window.type_keys(POSTAL_CODE)
+        if postal_control.exists(timeout=2):
+            # [จุดที่ 2] ดำเนินการกรอกข้อมูล
+            current_val = postal_control.texts()[0].strip()
+            if not current_val:
+                print(f" [-] -> ช่องว่าง, กรอก: {POSTAL_CODE}")
+                postal_control.click_input() 
+                main_window.type_keys(POSTAL_CODE)
+            else:
+                print(f" [-] -> ช่องมีค่าอยู่แล้ว: {current_val}, ข้ามการกรอก")
         else:
-            print(f" [-] -> ช่องมีค่าอยู่แล้ว: {postal_control.texts()[0].strip()}, ข้ามการกรอก")
+            print(f"[X] FAILED: หาช่องไปรษณีย์ไม่เจอ ข้ามไป...")
+            # return False # หรือจะ return False ถ้ายอมรับไม่ได้
+
         time.sleep(0.5)
     
         # --- ค้นหาช่องหมายเลขโทรศัพท์และกรอกข้อมูล ---
-        print(f"[*] 2.2. กำลังตรวจสอบ/กรอกเบอร์โทรศัพท์ ID='{PHONE_EDIT_AUTO_ID}'")
+        print(f"[*] 2.3. กำลังค้นหาช่องเบอร์โทรศัพท์ ID='{PHONE_EDIT_AUTO_ID}'")
         phone_control = main_window.child_window(auto_id=PHONE_EDIT_AUTO_ID, control_type="Edit")
     
-        # [จุดที่ 2] ตรวจสอบ/Scroll ซ้ำเพื่อหาช่องเบอร์โทรศัพท์
-        if not phone_control.exists(timeout=1):
-            print("[!] ช่องเบอร์โทรศัพท์ไม่ปรากฏทันที, กำลังตรวจสอบ/เลื่อนหน้าจอซ้ำ...")
-        
-        max_scrolls = 3
-        found = False
-        for i in range(max_scrolls):
-            force_scroll_down(main_window, CONFIG)
-            if phone_control.exists(timeout=1):
-                print("[/] ช่องเบอร์โทรศัพท์พบแล้วหลังการ Scroll")
-                found = True
-                break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถหาช่องเบอร์โทรศัพท์ '{PHONE_EDIT_AUTO_ID}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return False # ยกเลิกการทำงานหากหาไม่พบ
-    
-        #  [จุดที่ 3] ดำเนินการกรอกข้อมูล (เมื่อแน่ใจว่าพบแล้ว)
-        if not phone_control.texts()[0].strip():
-            print(f" [-] -> ช่องว่าง, กรอก: {PHONE_NUMBER}")
-            phone_control.click_input()
-            main_window.type_keys(PHONE_NUMBER)
+        # (Optional) ถ้าคิดว่าเบอร์โทรอยู่ต่ำกว่าไปรษณีย์มาก อาจจะ Scroll เพิ่มตรงนี้ได้
+        # force_scroll_down(main_window, scroll_dist=-3)
+
+        if phone_control.exists(timeout=2):
+            current_val = phone_control.texts()[0].strip()
+            if not current_val:
+                print(f" [-] -> ช่องว่าง, กรอก: {PHONE_NUMBER}")
+                phone_control.click_input()
+                main_window.type_keys(PHONE_NUMBER)
+            else:
+                print(f" [-] -> ช่องมีค่าอยู่แล้ว: {current_val}, ข้ามการกรอก")
         else:
-            print(f" [-] -> ช่องมีค่าอยู่แล้ว: {phone_control.texts()[0].strip()}, ข้ามการกรอก")
+             print(f"[X] FAILED: หาช่องเบอร์โทรศัพท์ไม่เจอ")
+             return False
+             
         time.sleep(0.5)
 
-    # --- กด 'ถัดไป' เพื่อยืนยัน ---
-        print(f"[*] 2.3. กดปุ่ม '{NEXT_TITLE}' เพื่อไปหน้าถัดไป...")
+        # --- กด 'ถัดไป' เพื่อยืนยัน ---
+        print(f"[*] 2.4. กดปุ่ม '{NEXT_TITLE}' เพื่อไปหน้าถัดไป...")
         main_window.child_window(title=NEXT_TITLE, auto_id=NEXT_AUTO_ID, control_type="Text").click_input()
         time.sleep(WAIT_TIME)
     
         print("\n[V] SUCCESS: ดำเนินการขั้นตอน สำเร็จ!")
         return True
+
     except Exception as e:
-        print(f"\n[X] FAILED: เกิดข้อผิดพลาดใน : {e}")
+        print(f"\n[X] FAILED: เกิดข้อผิดพลาดใน loan_main: {e}")
+        import traceback
+        traceback.print_exc()
         return False
     
 # ----------------- ฟังก์ชันแม่แบบสำหรับรายการย่อย -----------------
@@ -332,33 +321,7 @@ def loan_services10():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # เพิ่มการตรวจสอบ/Scroll
-        SERVICE_TITLE = S_CFG['LOAN_10_TITLE']
-        TRANSACTION_CONTROL_TYPE = S_CFG['TRANSACTION_CONTROL_TYPE']
-        target_control = main_window.child_window(title=SERVICE_TITLE, auto_id=TRANSACTION_CONTROL_TYPE, control_type="Text")
-        
-        max_scrolls = 3
-        found = False
-        
-        print(f"[*] 1.5. กำลังตรวจสอบรายการ '{SERVICE_TITLE}' ก่อน Scroll...")
-        if target_control.exists(timeout=1):
-            print("[/] รายการย่อยพบแล้ว, ไม่จำเป็นต้อง Scroll.")
-            found = True
-        
-        if not found:
-            print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
-            for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
-                if target_control.exists(timeout=1):
-                    print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
-                    found = True
-                    break
-        
-        if not found:
-            print(f"[X] FAILED: ไม่สามารถค้นหารายการย่อย '{SERVICE_TITLE}' ได้หลัง Scroll {max_scrolls} ครั้ง")
-            return
-        
-        loan_transaction(main_window,SERVICE_TITLE)
+        loan_transaction(main_window,S_CFG['LOAN_10_TITLE'])
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
@@ -387,7 +350,7 @@ def loan_services11():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -426,7 +389,7 @@ def loan_services12():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -465,7 +428,7 @@ def loan_services13():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -504,7 +467,7 @@ def loan_services14():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -543,7 +506,7 @@ def loan_services15():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -582,7 +545,7 @@ def loan_services16():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -621,7 +584,7 @@ def loan_services17():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -660,7 +623,7 @@ def loan_services18():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True
@@ -699,7 +662,7 @@ def loan_services19():
         if not found:
             print(f"[*] 1.5.1. รายการย่อยไม่ปรากฏทันที, เริ่มการ Scroll ({max_scrolls} ครั้ง)...")
             for i in range(max_scrolls):
-                force_scroll_down(main_window, CONFIG) 
+                force_scroll_down(main_window, -5) 
                 if target_control.exists(timeout=1):
                     print(f"[/] รายการย่อยพบแล้วในการ Scroll ครั้งที่ {i+1}.")
                     found = True

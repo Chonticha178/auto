@@ -294,6 +294,7 @@ def loan_services4():
         loan_transaction(main_window, S_CFG['LOAN_4_TITLE'])
 
     except Exception as e:
+        
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services5():
