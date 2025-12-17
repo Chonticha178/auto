@@ -415,12 +415,11 @@ def run_service_by_config(service_num):
         main_window = app.top_window()
 
         # 2. ดึงค่าจาก Config
-        # สร้าง Key อัตโนมัติ เช่น 'LOAN_18_CODE' และ 'LOAN_18_TITLE'
         code_key = f'LOAN_{service_num}_CODE'
         title_key = f'LOAN_{service_num}_TITLE'
         
-        search_code = S_CFG[code_key]   # ดึงเลขรหัส (เช่น 52040)
-        target_title = S_CFG[title_key] # ดึงชื่อปุ่ม (เช่น 52040)
+        search_code = S_CFG[code_key]  
+        target_title = S_CFG[title_key] 
 
         # 3. ส่งค่าตัวแปรไปค้นหาและคลิก
         search_and_select_transaction(main_window, search_code, target_title)
@@ -438,12 +437,10 @@ def loan_services11():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_11_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_11_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_11_CODE'],   
+            S_CFG['LOAN_11_TITLE']   
         )
 
     except Exception as e:
@@ -457,148 +454,133 @@ def loan_services12():
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_12_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_12_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_12_CODE'],   
+            S_CFG['LOAN_12_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services13():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 13)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_13_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_13_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_13_CODE'],   
+            S_CFG['LOAN_13_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services14():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 14)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_14_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_14_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_14_CODE'],   
+            S_CFG['LOAN_14_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services15():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 15)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_15_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_15_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_15_CODE'],  
+            S_CFG['LOAN_15_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services16():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 16)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_16_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_16_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_16_CODE'],  
+            S_CFG['LOAN_16_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services17():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 17)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_17_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_17_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_17_CODE'],  
+            S_CFG['LOAN_17_TITLE']   
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services18():
-    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 12)...")
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 18)...")
     try:
         if not loan_main(): return
 
         app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
         main_window = app.top_window()
 
-        # [จุดที่แก้ไข]: เรียกใช้ฟังก์ชันค้นหาแทน loan_transaction เดิม
-        # โดยดึงค่า Code และ Title มาจากตัวแปร S_CFG (Config) โดยตรง
         search_and_select_transaction(
             main_window, 
-            S_CFG['LOAN_18_CODE'],   # รหัสค้นหา (เช่น 50636)
-            S_CFG['LOAN_18_TITLE']   # ชื่อปุ่ม (เช่น 50636)
+            S_CFG['LOAN_18_CODE'],   
+            S_CFG['LOAN_18_TITLE']  
         )
 
     except Exception as e:
         print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 def loan_services19():
-    print(f"\n{'='*50}\n[*] พิเศษ: กำลังทำรายการ 19 (แบบเขียนแยกเอง)...")
-    
-    # 1. เรียก Logic ส่วนกลางมาใช้ (ถ้าต้องการ)
-    if not loan_main(): return
-    app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
-    
-    # 2. ดึงค่า Config มาเอง
-    code = S_CFG['LOAN_19_CODE']
-    title = S_CFG['LOAN_19_TITLE']
-    
-    # 3. สั่งค้นหาและทำรายการ
-    # (ตรงนี้คุณสามารถแทรกคำสั่งพิเศษเฉพาะของข้อ 19 ได้)
-    print("--- ขั้นตอนพิเศษเฉพาะข้อ 19 ---")
-    time.sleep(5) 
-    
-    search_and_select_transaction(app.top_window(), code, title)
+    print(f"\n{'='*50}\n[*] 1. กำลังเข้าสู่หน้า 'บริการสินเชื่อ' (รายการ 19)...")
+    try:
+        if not loan_main(): return
+
+        app = Application(backend="uia").connect(title_re=WINDOW_TITLE, timeout=10)
+        main_window = app.top_window()
+
+        search_and_select_transaction(
+            main_window, 
+            S_CFG['LOAN_19_CODE'],   
+            S_CFG['LOAN_19_TITLE']  
+        )
+
+    except Exception as e:
+        print(f"\n[x] FAILED ไม่สามารถเชื่อมต่อโปรแกรม POS ได้: {e}")
 
 if __name__ == "__main__":
     loan_main()
