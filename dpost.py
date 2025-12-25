@@ -4,6 +4,7 @@ import configparser
 import os
 import sys
 
+
 # ชื่อไฟล์ Config
 CONFIG_FILE = "config.ini"
 
